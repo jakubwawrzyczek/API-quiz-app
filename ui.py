@@ -48,6 +48,8 @@ class QuizInterface:
         if self.quiz.still_has_questions():
             q_text = self.quiz.next_question()
             self.main_canv.itemconfig(self.question_text, text=q_text)
+            self.true_btn.config(state='normal')
+            self.false_btn.config(state='normal')
         else:
             self.main_canv.itemconfig(self.question_text, text='You have reached to the end of the quiz!\n'
                                                                f'Your final score is {self.quiz.score} out of the 10, '
@@ -63,6 +65,8 @@ class QuizInterface:
         self.give_feedback(self.quiz.check_answer(user_answer='False'))
 
     def give_feedback(self, is_right):
+        self.true_btn.config(state='disabled')
+        self.false_btn.config(state='disabled')
         if is_right:
             self.main_canv.config(bg='green')
         else:
