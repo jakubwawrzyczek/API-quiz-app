@@ -3,6 +3,7 @@ from quiz_brain import QuizBrain
 
 THEME_COLOR = "#375362"
 
+
 class QuizInterface:
 
     def __init__(self, quiz_brain: QuizBrain):
@@ -31,10 +32,10 @@ class QuizInterface:
         true_image = PhotoImage(file='images/true.png')
         false_image = PhotoImage(file='images/false.png')
 
-        self.true_btn = Button(image=true_image, highlightthickness=0)
+        self.true_btn = Button(image=true_image, highlightthickness=0, command=self.true_pressed)
         self.true_btn.grid(row=2, column=0)
 
-        self.false_btn = Button(image=false_image, highlightthickness=0)
+        self.false_btn = Button(image=false_image, highlightthickness=0, command=self.false_pressed)
         self.false_btn.grid(row=2, column=1)
 
         self.get_next_question()
@@ -42,5 +43,28 @@ class QuizInterface:
         self.window.mainloop()
 
     def get_next_question(self):
-        q_text = self.quiz.next_question()
-        self.main_canv.itemconfig(self.question_text, text=q_text)
+        self.main_canv.config(bg='white')
+        self.score_lbl.config(text=f'score: {self.quiz.score}')
+        if self.quiz.still_has_questions():
+            q_text = self.quiz.next_question()
+            self.main_canv.itemconfig(self.question_text, text=q_text)
+        else:
+            self.main_canv.itemconfig(self.question_text, text='You have reached to the end of the quiz!\n'
+                                                               f'Your final score is {self.quiz.score} out of the 10, '
+                                                               f'good job!')
+            self.true_btn.config(state='disabled')
+            self.false_btn.config(state='disabled')
+
+
+    def true_pressed(self):
+        self.give_feedback(self.quiz.check_answer(user_answer='True'))
+
+    def false_pressed(self):
+        self.give_feedback(self.quiz.check_answer(user_answer='False'))
+
+    def give_feedback(self, is_right):
+        if is_right:
+            self.main_canv.config(bg='green')
+        else:
+            self.main_canv.config(bg='red')
+        self.window.after(300, self.get_next_question)
